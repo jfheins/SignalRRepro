@@ -8,9 +8,16 @@
     <h1 class="display-4">Welcome</h1>
 </div>
 
-<div id="status">status</div>
-<div id="time">time</div>
-<div id="delay">delay</div>
+<div id="controls">
+    <input type="range" id="slowness" name="slowness"
+           value="30" min="15" max="100">
+    <label for="slowness">Slowness</label>
+    <button id="goBtn" onclick="startClient()">Start Client</button>
+</div>
+
+<div>Status: <span id="status"></span></div>
+<div>Time from Message: <span id="time"></span></div>
+<div>Delay: <span id="delay"></span></div>
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/client.js"></script>
