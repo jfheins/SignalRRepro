@@ -30,8 +30,7 @@ public class MessageSender : IHostedService, IDisposable
 
     private void DoWork(object? _)
     {
-        var serializedData = JsonSerializer.Serialize(_dummyData);
-        var message = new { time = DateTime.UtcNow.ToString("O"), data = serializedData };
+        var message = new { time = DateTime.UtcNow.ToString("O"), data = _dummyData };
         SendTime(message);
     }
 
