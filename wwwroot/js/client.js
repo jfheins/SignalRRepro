@@ -23,7 +23,7 @@ document.getElementById("status").innerText = "Preparing...";
 
 const start = performance.now();
 let iterations = 0;
-while (performance.now() - start < 100) {
+while (performance.now() - start < 25) {
   beBusy();
   iterations++;
 }
