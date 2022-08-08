@@ -15,7 +15,7 @@ public class Logger : IHostedService, IDisposable
 
     private void Log(object? _)
     {
-        var usedMiB = Process.GetCurrentProcess().WorkingSet64 / 1024 / 1024;
+        var usedMiB = Process.GetCurrentProcess().WorkingSet64 / 1048576f;
         Console.WriteLine($"Using {usedMiB:F1} MiB");
     }
     

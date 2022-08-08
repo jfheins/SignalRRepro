@@ -21,7 +21,7 @@ public class MessageSender : IHostedService, IDisposable
 
     public Task StartAsync(CancellationToken stoppingToken)
     {
-        _timer = new Timer(DoWork, null, TimeSpan.FromSeconds(0.5),
+        _timer = new Timer(DoWork, null, TimeSpan.FromSeconds(2.5),
             TimeSpan.FromMilliseconds(5));
         _hub = _sp.GetRequiredService<IHubContext<MyHub>>();
 
