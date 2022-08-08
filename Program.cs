@@ -1,7 +1,13 @@
+using SignalRRepro;
+using SignalRRepro.Hubs;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddSignalR();
+builder.Services.AddHostedService<MessageSender>();
+builder.Services.AddHostedService<Logger>();
 
 var app = builder.Build();
 
@@ -21,5 +27,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapHub<MyHub>("/myHub");
 
 app.Run();
