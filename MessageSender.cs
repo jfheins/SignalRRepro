@@ -1,40 +1,31 @@
-using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
 using SignalRRepro.Hubs;
 
 namespace SignalRRepro;
 
-public class MessageSender : IHostedService, IDisposable
+public class MessageSender : BackgroundService, IDisposable
 {
-    private readonly IServiceProvider _sp;
-    private Timer? _timer;
-    
-    private static readonly Random Rand = new();
     private readonly byte[] _dummyData = new byte[2048];
     private IHubContext<MyHub>? _hub;
 
-    public MessageSender(IServiceProvider sp)
+    public MessageSender(IHubContext<MyHub> hub)
     {
-        _sp = sp;
-        Rand.NextBytes(_dummyData);
+        _hub = hub;
+        Random.Shared.NextBytes(_dummyData);
     }
 
-    public Task StartAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _timer = new Timer(DoWork, null, TimeSpan.FromSeconds(2.5),
-            TimeSpan.FromMilliseconds(5));
-        _hub = _sp.GetRequiredService<IHubContext<MyHub>>();
+        using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(5));
 
-        return Task.CompletedTask;
+        while (await timer.WaitForNextTickAsync(stoppingToken))
+        {
+            var message = new { time = DateTime.UtcNow.ToString("O"), data = _dummyData };
+            await SendTime(message);
+        }
     }
 
-    private void DoWork(object? _)
-    {
-        var message = new { time = DateTime.UtcNow.ToString("O"), data = _dummyData };
-        SendTime(message);
-    }
-
-    private async void SendTime(object msg)
+    private async Task SendTime(object msg)
     {
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
         try
@@ -45,16 +36,5 @@ public class MessageSender : IHostedService, IDisposable
         {
             //Console.WriteLine("Cancelled send");
         }
-    }
-
-    public Task StopAsync(CancellationToken stoppingToken)
-    {
-        _timer?.Change(Timeout.Infinite, 0);
-        return Task.CompletedTask;
-    }
-
-    public void Dispose()
-    {
-        _timer?.Dispose();
     }
 }
