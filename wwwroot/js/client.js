@@ -40,6 +40,7 @@ function startClient() {
 
     connection.on("clock", function (message) {
         document.getElementById("time").innerText = message.time;
+        document.getElementById("id").innerText = message.id;
         document.getElementById("delay").innerText = calcDelay(message.time) + " ms";
         for (let i = 0; i < iterations; i++) {
             beBusy();

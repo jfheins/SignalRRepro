@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
 builder.Services.AddHostedService<MessageSender>();
-builder.Services.AddHostedService<Logger>();
+// builder.Services.AddHostedService<Logger>();
 
 var app = builder.Build();
 
@@ -27,6 +27,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
-app.MapHub<MyHub>("/myHub");
+app.MapHub<MyHub>("/myHub", o => { o.ApplicationMaxBufferSize = 2; });
 
 app.Run();
