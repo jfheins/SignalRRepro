@@ -27,6 +27,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
-app.MapHub<MyHub>("/myHub", o => { o.ApplicationMaxBufferSize = 2; });
+app.MapHub<MyHub>("/myHub");
 
 app.Run();
