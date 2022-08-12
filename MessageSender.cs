@@ -25,10 +25,11 @@ public class MessageSender : BackgroundService, IDisposable
 
     private async Task Consume()
     {
-        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+        var cts = new CancellationTokenSource();
 
         await foreach (var msg in _channel.Reader.ReadAllAsync())
         {
+            cts.CancelAfter(TimeSpan.FromSeconds(20));
             try
             {
                 var sw = Stopwatch.StartNew();
@@ -38,18 +39,21 @@ public class MessageSender : BackgroundService, IDisposable
                 sw.Stop();
                 if (delay)
                 {
+                    // Print a message if there's back pressure
                     Console.WriteLine($"Took {sw.ElapsedMilliseconds}ms, Buffer={_channel.Reader.Count}, Queue Delay={DateTime.UtcNow.Subtract(msg.SentTime).TotalMilliseconds}ms");
                 }
             }
             catch (OperationCanceledException)
             {
+                // It turns out this never fires. The token is passed to each client independently.
                 Console.WriteLine("Cancelled send");
             }
 
             // Reuse the cancellation token as well as it hasn't timed out
             if (!cts.TryReset())
             {
-                cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+                cts.Dispose();
+                cts = new();
             }
         }
     }
